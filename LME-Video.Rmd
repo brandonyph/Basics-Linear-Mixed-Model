@@ -1,0 +1,136 @@
+---
+title: "Linear Mixed Model"
+author: "BrandonYEO"
+date: "1/25/2022"
+output: 
+  md_document:
+    variant: gfm
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(lme4)
+
+politeness<- 
+  read.csv("http://www.bodowinter.com/tutorial/politeness_data.csv")
+
+which(is.na(politeness)==T)
+
+politeness <- politeness[complete.cases(politeness),]
+```
+
+```{r}
+boxplot(frequency ~ attitude*gender,
+        col=c("white","lightgray"),politeness)
+```
+
+# What are you actually trying to see
+```{r}
+library(ggplot2)
+library(dplyr)
+
+politeness %>% ggplot(aes(x= attitude, y=frequency)) +
+                geom_boxplot() 
+
+politeness %>% ggplot(aes(x= attitude, y=frequency)) +
+                geom_boxplot() +
+                facet_grid(.~subject)
+
+politeness %>% ggplot(aes(x= attitude, y=frequency)) +
+                geom_boxplot() +
+                facet_grid(.~scenario)
+
+politeness %>% ggplot(aes(x= attitude, y=frequency)) +
+                geom_jitter() +
+                facet_grid(scenario~subject)
+
+```
+
+Syntax
+model = lmer(target ~ fixed1 + fixed2+  (1|random1) +  (1|random2), data=data)
+
+# An Example of Linear Mixed Model 
+```{r}
+politeness.model = lmer(frequency ~ attitude +
+                                    (1|subject) + 
+                                    (1|scenario) , 
+                                    data=politeness)
+politeness.model
+```
+```{r}
+politeness.model = lmer(frequency ~ attitude + gender +
+                          (1 | subject) +
+                          (1 | scenario),
+                        data = politeness)
+
+politeness.model
+```
+
+```{r}
+politeness.null = lmer(frequency ~ gender +
+                         (1 | subject) + (1 | scenario),
+                       data = politeness,
+                       REML = FALSE)
+
+politeness.null
+```
+
+
+```{r}
+politeness.model = lmer(frequency ~ attitude + gender +
+                          (1 | subject) + (1 | scenario),
+                        data = politeness,
+                        REML = FALSE)
+```
+
+
+```{r}
+anova(politeness.null,politeness.model)
+```
+
+# Random slopes versus random intercepts
+
+```{r}
+coef(politeness.model)
+```
+
+```{r}
+politeness.model = lmer( frequency ~ attitude + gender + 
+                            (1 + attitude | subject) +
+                            (1 + attitude | scenario),
+                            data = politeness,
+                            REML = FALSE)
+
+```
+
+```{r}
+coef(politeness.model)
+```
+
+```{r}
+
+politeness.model = lmer( frequency ~ attitude + gender + 
+                            (1 + attitude | subject) +
+                            (1 + attitude | scenario),
+                            data = politeness,
+                            REML = FALSE)
+
+politeness.null = lmer( frequency ~ gender + 
+                            (1 + attitude | subject) +
+                            (1 + attitude | scenario),
+                            data = politeness,
+                            REML = FALSE)
+
+```
+
+```{r}
+anova(politeness.null,politeness.model)
+```
+
+
+
+
+
