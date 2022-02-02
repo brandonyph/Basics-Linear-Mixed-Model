@@ -36,6 +36,9 @@ library(ggplot2)
 
     ## Warning: package 'ggplot2' was built under R version 4.1.2
 
+    ## Warning in register(): Can't find generic `scale_type` in package ggplot2 to
+    ## register S3 method.
+
 ``` r
 library(dplyr)
 ```

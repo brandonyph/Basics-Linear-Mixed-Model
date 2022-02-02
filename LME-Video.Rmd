@@ -125,7 +125,6 @@ politeness.null = lmer( frequency ~ gender +
                             REML = FALSE)
 
 ```
-
 ```{r}
 anova(politeness.null,politeness.model)
 ```
